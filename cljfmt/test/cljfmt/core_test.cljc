@@ -702,8 +702,7 @@
          ["~ @foo"]))
     (is (reformats-to?
          ["~\n@foo"]
-         ["~ @foo"])))
-)
+         ["~ @foo"]))))
 
 (deftest test-remove-multiple-non-indenting-spaces
   (let [opts {:remove-multiple-non-indenting-spaces? true}]
