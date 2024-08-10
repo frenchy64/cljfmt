@@ -65,14 +65,33 @@
 (defn- namespaced-map? [zloc]
   (and zloc (= (n/tag (z/node zloc)) :namespaced-map)))
 
-(defn- missing-whitespace? [zloc]
+(defn- unquote? [zloc]
+  (and zloc (= (n/tag (z/node zloc)) :unquote)))
+
+(defn- deref? [zloc]
+  (and zloc (= (n/tag (z/node zloc)) :deref)))
+
+(defn- broken-unquote-deref? [zloc]
+  (and (deref? zloc)
+       (unquote? (z/up* zloc))))
+
+(defn- missing-space-left? [zloc]
+  (broken-unquote-deref? zloc))
+
+(defn- missing-space-right? [found-unquote-deref zloc]
+  (when (missing-space-left? zloc)
+    (vreset! found-unquote-deref true))
   (and (element? zloc)
        (not (reader-macro? (z/up* zloc)))
        (not (namespaced-map? (z/up* zloc)))
        (element? (z/right* zloc))))
 
 (defn insert-missing-whitespace [form]
-  (transform form edit-all missing-whitespace? z/insert-space-right))
+  (let [found-missing-space-left (volatile! nil)]
+    (-> form
+        (transform edit-all #(missing-space-right? found-missing-space-left %) z/insert-space-right)
+        (cond->
+          @found-missing-space-left (transform edit-all missing-space-left? z/insert-space-left)))))
 
 (defn- space? [zloc]
   (= (z/tag zloc) :whitespace))
