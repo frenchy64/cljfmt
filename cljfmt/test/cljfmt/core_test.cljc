@@ -1640,7 +1640,7 @@
             "  bar)"
             "(#:foo{:bar 1}"
             "  baz)"
-            "(~@ foo"
+            "(~ @foo"
             "  bar)"]
            {:function-arguments-indentation :cursive})))
     (testing ":zprint uses 2 spaces if starting with a symbol, keyword, or list"
