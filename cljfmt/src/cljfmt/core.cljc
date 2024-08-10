@@ -72,8 +72,8 @@
   (and zloc (= (n/tag (z/node zloc)) :deref)))
 
 (defn- broken-unquote-deref? [zloc]
-  (and (unquote? (z/up* zloc))
-       (deref? zloc)))
+  (and (deref? zloc)
+       (unquote? (z/up* zloc))))
 
 (defn- missing-space-left? [zloc]
   (broken-unquote-deref? zloc))
